@@ -69,5 +69,19 @@ class State:
         return State(self.environment, self.BEE_posit, self.BEE_orient, self.widget_centres, self.widget_orients,
                      force_valid=self.force_valid)
 
+    def get_successors(self, state):
+        """
+        Get the successors of the given state.
+        return: a list of (action, new_state) pairs
+        """
+        successors = []
+
+        for action in BEE_ACTIONS:
+            success, new_state = self.environment.perform_action(state, action)
+            if success:
+                successors.append((action, new_state))
+
+        return successors
+
 
 

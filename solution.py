@@ -2,6 +2,7 @@ import sys
 from constants import *
 from environment import *
 from state import State
+import heapq
 
 """
 solution.py
@@ -49,8 +50,37 @@ class Solver:
         # ==============================================================================================================
         #
         #
+        visited = set()
+        parents = {}
+        frontier = []
+        initial_state = self.environment.get_init_state()
+        heapq.heappush(frontier, (0, initial_state))
 
-        pass
+        while frontier:
+            self.loop_counter.inc()
+            cost, state = heapq.heappop(frontier)
+
+            if self.environment.is_solved(state):
+                path = []
+                while state != initial_state:
+                    state, action = parents[state]
+                    path.append(action)
+                path.reverse()
+                return path
+
+            if state in visited:
+                continue
+
+            visited.add(state)
+
+            for action in BEE_ACTIONS:
+                success, cur_cost, new_state = self.environment.perform_action(state, action)
+                if success and new_state not in visited:
+                    parents[new_state] = (state, action)
+                    heapq.heappush(frontier, (cost + cur_cost, new_state))
+
+        return []
+
 
     # === A* Search ====================================================================================================
 
