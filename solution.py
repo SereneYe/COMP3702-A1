@@ -100,6 +100,9 @@ class Solver:
         if state.is_next_to_obstacle():
             total_distance += 1
 
+        if state.is_not_adjacent_widget():
+            total_distance += 0.6
+
         center_dict = copy.deepcopy(self.target_center_dict)
         widget_dict = dict(zip(state.widget_centres, state.environment.widget_types))
 

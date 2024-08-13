@@ -79,6 +79,7 @@ class State:
     def deepcopy(self):
         return State(self.environment, self.BEE_posit, self.BEE_orient, self.widget_centres, self.widget_orients,
                      force_valid=self.force_valid)
+
     def is_on_edge(self):
         return self.BEE_posit[0] == 0 or self.BEE_posit[0] == self.environment.n_rows - 1 or \
                self.BEE_posit[1] == 0 or self.BEE_posit[1] == self.environment.n_cols - 1
@@ -96,6 +97,14 @@ class State:
                 return True
 
         return False
+
+    def is_not_adjacent_widget(self):
+        for widget_position in self.widget_centres:
+            if min(abs(self.BEE_posit[0] - widget_position[0]),abs(self.BEE_posit[1] - widget_position[1]))<= 1:
+                return False
+
+        return True
+
 
 
 
