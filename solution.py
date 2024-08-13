@@ -88,10 +88,10 @@ class Solver:
         total_distance = 0
 
         if state.is_on_edge():
-            total_distance += 10
+            total_distance += 5
 
         if state.is_next_to_obstacle():
-            total_distance += 10
+            total_distance += 5
 
         center_dict = state.get_target_centers()
         widget_dict = {}
