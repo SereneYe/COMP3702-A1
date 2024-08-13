@@ -4,7 +4,6 @@ import random
 import sys
 import copy
 
-
 from constants import *
 from environment import *
 from state import State
@@ -21,18 +20,6 @@ You should implement
 COMP3702 2024 Assignment 1 Support Code
 """
 
-
-def filter_widget_dict(widget_dict, center_dict):
-    center_types = set(center_dict.values())
-
-    # Create a copy of widget_dict for iteration, to avoid modifying a dictionary while iterating it.
-    widget_dict_copy = widget_dict.copy()
-
-    # Iterate through widget_dict_copy
-    for widget_location, widget_type in widget_dict_copy.items():
-        # If the type of widget is not in center_dict, remove it from widget_dict
-        if widget_type not in center_types:
-            del widget_dict[widget_location]
 
 
 class Solver:
@@ -73,14 +60,11 @@ class Solver:
 
     # === A* Search =========================================================================
     def preprocess_heuristic(self):
-        """
-        Perform pre-processing (e.g. pre-computing repeatedly used values) necessary for your heuristic,
-        """
         target_list_copy = self.environment.target_list.copy()
         center_points = {}
         nums = sorted((int(num) for num in self.environment.widget_types), reverse=True)
         for n in nums:
-            target_found = False  # Set a flag
+            target_found = False
             for target in target_list_copy.copy():
                 row, col = target
                 neighbors = get_neighbor_coords(row, col)
@@ -117,32 +101,29 @@ class Solver:
             total_distance += 1
 
         center_dict = copy.deepcopy(self.target_center_dict)
-        widget_dict = {}
-
-        for i in range(len(state.widget_centres)):
-            widget_dict[state.widget_centres[i]] = state.environment.widget_types[i]
+        widget_dict = dict(zip(state.widget_centres, state.environment.widget_types))
 
         for widget_location, widget_type in widget_dict.items():
             if widget_type not in center_dict.values():
-                total_distance += widget_location[1]*100
+                continue
 
             min_distance = float('inf')
             optimal_center = None
 
             for center, center_type in center_dict.items():
                 if center_type == widget_type:
-                    distance = abs(center[0] - widget_location[0]) + abs(center[1] - widget_location[1])
+                    distance = min(abs(center[0] - widget_location[0]), abs(center[1] - widget_location[1]))
+
                     if distance < min_distance:
                         min_distance = distance
                         optimal_center = center
 
+            total_distance += min_distance*0.25
+
             if optimal_center and min_distance == 0:
                 del center_dict[optimal_center]
 
-            total_distance += min_distance
-
         return total_distance
-
 
     def solve_a_star(self):
         initial_state = self.environment.get_init_state()
@@ -194,6 +175,7 @@ class StateNode:
             if success:
                 successors.append(StateNode(self.path_cost + cost, next_state, self, a))
         return successors
+
 
 def get_neighbor_coords(row, col):
     if col % 2 == 0:
