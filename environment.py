@@ -103,8 +103,7 @@ class Environment:
                     len_offset = 0
 
                 # split line into symbols and strip formatting characters
-                symbols = [s.replace('\\', '').replace('/', '').replace('_', '')
-                           for s in line.strip().split('\\__/')]
+                symbols = [s.replace('\\', '').replace('/', '').replace('_', '') for s in line.strip().split('\\__/')]
                 symbols = [s for s in symbols if len(s) > 0]    # remove empty symbols
                 if len(symbols) != ((self.n_cols // 2) + len_offset):
                     assert False, f'!!! Invalid input file - incorrect hex grid row length (line {line_num}) !!!'
@@ -706,7 +705,6 @@ def widget_get_movement_type(BEE_orient, forward_BEE_posit, centre):
         return SPIN_CW
     else:
         return SPIN_CCW
-
 
 
 

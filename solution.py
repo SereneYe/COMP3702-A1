@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import random
 import sys
+import copy
+
+
 from constants import *
 from environment import *
 from state import State
@@ -36,6 +40,7 @@ class Solver:
     def __init__(self, environment, loop_counter):
         self.environment = environment
         self.loop_counter = loop_counter
+        self.target_center_dict = self.preprocess_heuristic()
         #
         # TODO: Define any class instance variables you require here.
         # NOTE: avoid performing any computationally expensive heuristic preprocessing operations here - use the preprocess_heuristic method below for this purpose
@@ -71,35 +76,56 @@ class Solver:
         """
         Perform pre-processing (e.g. pre-computing repeatedly used values) necessary for your heuristic,
         """
+        target_list_copy = self.environment.target_list.copy()
+        center_points = {}
+        nums = sorted((int(num) for num in self.environment.widget_types), reverse=True)
+        for n in nums:
+            target_found = False  # Set a flag
+            for target in target_list_copy.copy():
+                row, col = target
+                neighbors = get_neighbor_coords(row, col)
+                neighbor_count = sum(1 for neighbor in neighbors if neighbor in target_list_copy)
+                if neighbor_count >= n - 1:
+                    center_points[target] = str(n)
+                    target_list_copy.remove(target)
+                    remove_neighbors_count = 0
+                    for neighbor in neighbors:
+                        if neighbor in target_list_copy:
+                            target_list_copy.remove(neighbor)
+                            remove_neighbors_count += 1
+                        if remove_neighbors_count >= n - 1:
+                            break
+                    target_found = True
+                    break
+            if target_found:
+                continue
 
-        #
-        #
-        # TODO: (Optional) Implement code for any preprocessing required by your heuristic here (if your heuristic
-        #  requires preprocessing).
-        #
-        # If you choose to implement code here, you should call this method from your solve_a_star method (e.g. once at
-        # the beginning of your search).
-        #
-        #
+        while len(center_points) < self.environment.n_widgets and target_list_copy:
+            random_point = random.choice(target_list_copy)
+            center_points[random_point] = len(target_list_copy)
+            target_list_copy.remove(random_point)
 
-        pass
+        return center_points
 
     def compute_heuristic(self, state):
         total_distance = 0
 
         if state.is_on_edge():
-            total_distance += 5
+            total_distance += 1
 
         if state.is_next_to_obstacle():
-            total_distance += 5
+            total_distance += 1
 
-        center_dict = state.get_target_centers()
+        center_dict = copy.deepcopy(self.target_center_dict)
         widget_dict = {}
 
         for i in range(len(state.widget_centres)):
             widget_dict[state.widget_centres[i]] = state.environment.widget_types[i]
 
         for widget_location, widget_type in widget_dict.items():
+            if widget_type not in center_dict.values():
+                total_distance += widget_location[1]*100
+
             min_distance = float('inf')
             optimal_center = None
 
@@ -115,9 +141,7 @@ class Solver:
 
             total_distance += min_distance
 
-
-        return total_distance/5
-
+        return total_distance
 
 
     def solve_a_star(self):
@@ -141,8 +165,6 @@ class Solver:
                     heapq.heappush(frontier, StateNode(full_cost, s.state, node, s.action_from_parent))
 
         return []
-
-
 
 
 class StateNode:
@@ -173,4 +195,11 @@ class StateNode:
                 successors.append(StateNode(self.path_cost + cost, next_state, self, a))
         return successors
 
-
+def get_neighbor_coords(row, col):
+    if col % 2 == 0:
+        neighbors = [(row - 1, col - 1), (row - 1, col), (row - 1, col + 1), (row, col + 1), (row + 1, col),
+                     (row, col - 1)]
+    else:
+        neighbors = [(row, col - 1), (row - 1, col), (row, col + 1), (row + 1, col - 1),
+                     (row + 1, col), (row + 1, col + 1)]
+    return neighbors

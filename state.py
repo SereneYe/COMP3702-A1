@@ -108,37 +108,7 @@ class State:
 
         return False
 
-    def get_target_centers(self):
-        target_list_copy = self.environment.target_list.copy()
-        center_points = {}
-        nums = sorted((int(num) for num in self.environment.widget_types), reverse=True)
-        for n in nums:
-            target_found = False  # Set a flag
-            for target in target_list_copy.copy():
-                row, col = target
-                neighbors = get_neighbor_coords(row, col)
-                neighbor_count = sum(1 for neighbor in neighbors if neighbor in target_list_copy)
-                if neighbor_count >= n - 1:
-                    center_points[target] = str(n)
-                    target_list_copy.remove(target)
-                    remove_neighbors_count = 0
-                    for neighbor in neighbors:
-                        if neighbor in target_list_copy:
-                            target_list_copy.remove(neighbor)
-                            remove_neighbors_count += 1
-                        if remove_neighbors_count >= n - 1:
-                            break
-                    target_found = True
-                    break
-            if target_found:
-                continue
 
-        while len(center_points) < self.environment.n_widgets and target_list_copy:
-            random_point = random.choice(target_list_copy)
-            center_points[random_point] = len(target_list_copy)
-            target_list_copy.remove(random_point)
-
-        return center_points
 
 
 
