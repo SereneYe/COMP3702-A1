@@ -30,7 +30,8 @@ class Solver:
         self.target_center_dict = self.preprocess_heuristic()
         #
         # TODO: Define any class instance variables you require here.
-        # NOTE: avoid performing any computationally expensive heuristic preprocessing operations here - use the preprocess_heuristic method below for this purpose
+        # NOTE: avoid performing any computationally expensive heuristic preprocessing operations here
+        # - use the preprocess_heuristic method below for this purpose
         #
 
     def solve_ucs(self):
@@ -95,15 +96,12 @@ class Solver:
         total_distance = 0
 
         if state.is_on_edge():
-            total_distance += 1
+            total_distance += 0
 
         if state.is_next_to_obstacle():
-            total_distance += 1
+            total_distance += 0.5
 
-        if state.is_not_adjacent_widget():
-            total_distance += 0.6
-
-        center_dict = copy.deepcopy(self.target_center_dict)
+        center_dict = self.target_center_dict.copy()
         widget_dict = dict(zip(state.widget_centres, state.environment.widget_types))
 
         for widget_location, widget_type in widget_dict.items():
@@ -115,13 +113,14 @@ class Solver:
 
             for center, center_type in center_dict.items():
                 if center_type == widget_type:
-                    distance = min(abs(center[0] - widget_location[0]), abs(center[1] - widget_location[1]))
+                    distance = min(abs(center[0] - widget_location[0]),
+                                   abs(center[1] - widget_location[1]))
 
                     if distance < min_distance:
                         min_distance = distance
                         optimal_center = center
 
-            total_distance += min_distance*0.25
+            total_distance += min_distance/len(center_dict)
 
             if optimal_center and min_distance == 0:
                 del center_dict[optimal_center]

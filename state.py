@@ -12,8 +12,8 @@ COMP3702 2024 Assignment 1 Support Code
 
 def get_neighbor_coords(row, col):
     if col % 2 == 0:
-        neighbors = [(row - 1, col - 1), (row - 1, col), (row - 1, col + 1), (row, col + 1), (row + 1, col),
-                     (row, col - 1)]
+        neighbors = [(row - 1, col - 1), (row - 1, col), (row - 1, col + 1), (row, col + 1),
+                     (row + 1, col), (row, col - 1)]
     else:
         neighbors = [(row, col - 1), (row - 1, col), (row, col + 1), (row + 1, col - 1),
                      (row + 1, col), (row + 1, col + 1)]
@@ -90,7 +90,8 @@ class State:
         for dr, dc in neighbors:
             neighbour_row, neighbour_col = row + dr, col + dc
 
-            if not (0 <= neighbour_row < self.environment.n_rows and 0 <= neighbour_col < self.environment.n_cols):
+            if not (0 <= neighbour_row < self.environment.n_rows
+                    and 0 <= neighbour_col < self.environment.n_cols):
                 continue
 
             if self.environment.obstacle_map[neighbour_row][neighbour_col] == 1:
@@ -100,12 +101,17 @@ class State:
 
     def is_not_adjacent_widget(self):
         for widget_position in self.widget_centres:
-            if min(abs(self.BEE_posit[0] - widget_position[0]),abs(self.BEE_posit[1] - widget_position[1]))<= 1:
+            if min(abs(self.BEE_posit[0] - widget_position[0]),
+                   abs(self.BEE_posit[1] - widget_position[1])) <= 1:
                 return False
-
         return True
 
-
+    def adjacent_widget(self):
+        for widget_position in self.widget_centres:
+            if min(abs(self.BEE_posit[0] - widget_position[0]),
+                   abs(self.BEE_posit[1] - widget_position[1])) <= 1:
+                return widget_position
+        return None
 
 
 
