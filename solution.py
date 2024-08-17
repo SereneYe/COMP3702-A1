@@ -95,10 +95,10 @@ class Solver:
         total_distance = 0
 
         if state.is_on_edge():
-            total_distance += 1
+            total_distance += 1.5
 
         if state.is_next_to_obstacle():
-            total_distance += 1
+            total_distance += 1.2
 
         if state.is_not_adjacent_widget():
             return total_distance
@@ -124,7 +124,7 @@ class Solver:
                         if distance < min_distance:
                             min_distance = distance
 
-                total_distance += min_distance * 0.4
+                total_distance += min_distance * 0.45
 
             return total_distance
 
