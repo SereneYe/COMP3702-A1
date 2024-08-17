@@ -124,7 +124,7 @@ class Solver:
                         if distance < min_distance:
                             min_distance = distance
 
-                total_distance += min_distance * 0.45
+                total_distance += min_distance * 0.49
 
             return total_distance
 
