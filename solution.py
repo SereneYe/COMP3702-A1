@@ -101,7 +101,7 @@ class Solver:
             total_distance += 1.2
 
         if state.is_not_adjacent_widget():
-            total_distance += 1.2
+            total_distance += 1
             return total_distance
 
         else:
