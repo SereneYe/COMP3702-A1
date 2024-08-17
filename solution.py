@@ -102,32 +102,33 @@ class Solver:
             total_distance += 1
 
         if state.is_not_adjacent_widget():
-            total_distance += 0.6
+            total_distance += 1
+            return total_distance
 
-        center_dict = self.target_center_dict.copy()
-        widget_dict = dict(zip(state.widget_centres, state.environment.widget_types))
+        else:
+            center_dict = self.target_center_dict
+            widget_dict = dict(zip(state.widget_centres, state.environment.widget_types))
 
-        for widget_location, widget_type in widget_dict.items():
-            if widget_type not in center_dict.values():
-                continue
+            for widget_location, widget_type in widget_dict.items():
+                if widget_type not in center_dict.values():
+                    continue
 
-            min_distance = float('inf')
-            optimal_center = None
+                min_distance = float('inf')
+                for center, center_type in center_dict.items():
+                    if center_type == widget_type:
+                        x_distance = abs(center[0] - widget_location[0])
+                        y_distance = abs(center[1] - widget_location[1])
+                        if x_distance >= min_distance or y_distance >= min_distance:
+                            continue
+                        distance = min(x_distance, y_distance)
+                        if min_distance == 0:
+                            break
+                        if distance < min_distance:
+                            min_distance = distance
 
-            for center, center_type in center_dict.items():
-                if center_type == widget_type:
-                    distance = min(abs(center[0] - widget_location[0]), abs(center[1] - widget_location[1]))
+                total_distance += min_distance*0.25
 
-                    if distance < min_distance:
-                        min_distance = distance
-                        optimal_center = center
-
-            total_distance += min_distance*0.25
-
-            if optimal_center and min_distance == 0:
-                del center_dict[optimal_center]
-
-        return total_distance
+            return total_distance
 
     def solve_a_star(self):
         initial_state = self.environment.get_init_state()
