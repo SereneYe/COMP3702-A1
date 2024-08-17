@@ -21,7 +21,6 @@ COMP3702 2024 Assignment 1 Support Code
 """
 
 
-
 class Solver:
 
     def __init__(self, environment, loop_counter):
@@ -96,13 +95,12 @@ class Solver:
         total_distance = 0
 
         if state.is_on_edge():
-            total_distance += 1
+            total_distance += 1.6
 
         if state.is_next_to_obstacle():
-            total_distance += 1
+            total_distance += 0.8
 
         if state.is_not_adjacent_widget():
-            total_distance += 1
             return total_distance
 
         else:
@@ -126,7 +124,7 @@ class Solver:
                         if distance < min_distance:
                             min_distance = distance
 
-                total_distance += min_distance*0.25
+                total_distance += min_distance * 0.6
 
             return total_distance
 
